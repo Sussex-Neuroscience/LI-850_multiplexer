@@ -1,6 +1,74 @@
 # LI-850_multiplexer
 A multiplexing system for a LICOR CO2 and H20 analyser
 
+LICOR provides an "integrator's guide" for developers interested in communicating to the device with code https://www.licor.com/documents/945g90zvrem6z4tzlf5dk2ujl3g6hp46
+
+The LI-850 has a "communication grammar" based on XML. 
+Here is the link to a detailed description https://www.licor.com/env/support/LI-850/topics/grammar-01.html#Configurationgrammar. Briefly:
+
+There are 7 types of information sent to/from the device:
+- Value (a member of a specified set)
+- Boolean (boolean value)
+- Float (float point values)
+- Integer
+- Iso date (date in the international organization standard - format: 4-digit year, 2-digit month, 2-digit day)
+- String
+- "?" - when sent to the device will request all values that are held within a XML tag
+
+The communication is done via serial port.
+One very simple example is: sending from PC to device the following command: "<li850>?</li850>"  will return the entire configuration of the device as XML
+
+Another example, that will set the instrument to output one measurement per second is given by:
+
+```
+<LI850>
+    <CFG>
+        <OUTRATE>1</OUTRATE>
+    </CFG>
+</LI850>
+```
+this turns on/off reading of specific variables (in this example, turning on CO2 reading):
+
+```
+<LI850>
+    <RS232>
+        <CO2>TRUE</CO2>
+    </RS232>
+</LI850>
+
+
+```
+
+the above command (and most commands) should return a confirmation message, that can be read by the computer and will look like:
+``` 
+<li850><ack>true</ack></li850>. 
+```
+
+all measurements can be turned on/off with this structure (the turn line sets the device to do one measurement per second ```<OUTRATE>1</OUTRATE>```):
+
+```
+<LI850>
+    <CFG>
+        <OUTRATE>1</OUTRATE>
+    </CFG>
+    <RS232>
+        <CO2>TRUE</CO2>
+        <FLOWRATE>FALSE</FLOWRATE>
+        <H2O>FALSE</H2O>
+        <CELLTEMP>TRUE</CELLTEMP>
+        <CELLPRES>TRUE</CELLPRES>
+        <IVOLT>FALSE</IVOLT>
+        <CO2ABS>TRUE</CO2ABS>
+        <H2OABS>TRUE</H2OABS>
+        <H2ODEWPOINT>TRUE</H2ODEWPOINT>
+        <RAW>FALSE</RAW>
+        <ECHO>FALSE</ECHO>
+        <STRIP>FALSE</STRIP>
+    </RS232>
+</LI850>
+
+```
+
 
 
 
