@@ -12,8 +12,8 @@ Other items specific to this project are listed here:
 |qty|item|obs|link|
 |--|--|--|--|
 |12|solenoid valves|24V 4mm od tubing, quick connection system||
-|5|4mm od tubing||qty in meters|
-|2|6mm od tubing||qty in meters|
+|5|4mm od tubing|qty in meters||
+|2|6mm od tubing||https://uk.vwr.com/store/catalog/product.jsp?product_id=38670172|
 |4|tube connectors 2/3 inlet/outlet|||
 |88|m3 nuts|||
 |56|m3 screws||12mm|
