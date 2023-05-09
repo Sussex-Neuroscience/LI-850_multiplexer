@@ -1,32 +1,80 @@
+from belay import Device
+#import serial
+from multiplexer import multiplexer
+import support
+import licor
+from datetime import datetime
 import serial
-import Belay
-import class_li7000
+
+
+    
+file_name = "test_"+str(datetime.now())
+file_name_stabilization = file_name+"_stabilization_phase.csv"
+file_name_experiment = file_name+"_experiment_phase.csv"
+
+licor_port="COM1"
+licor = serial.Serial(licor_port,9600)
+
+multiplexer_port="COM4"
+multi = multiplexer(multiplexer_port) #SerialBeeHive is now bh
+multi.setup() # call the set up function
+print("done setup")
+
+n_chan = 12
+
+if n_chan>12:
+    n_chan=12 
+
+if n_chan<1:
+    n_chan=1
+
+
+#parameters for chamber stabilization (when it is first started)
+#total time needed for stabilization
+stab_time = 1 #in min
+#just convert the total stabilization time from minutes to milliseconds
+stab_time_ms = int(stab_time*60*1000)
+#how much time each chamber should be open
+cycle_time_ms = 2000
+
+
+#parameters for experiments
+#total time needed for stabilization
+exp_time = 60 #in min
+#just convert the total stabilization time from minutes to milliseconds
+exp_time_ms = int(exp_time*60*1000)
+#how much time each chamber should be open
+cycle_time_ms = 5000
+
+print("stabilizing chamber")
+data = support.cycleThrough(n_chan,stab_time_ms,cycle_time_ms,multi,licor)
+data.to_csv(file_name_stabilization)
+print("stabilization done")
 
 
 
-"""Licor serial comm is done with 9600 baud, 8 data bits, no parity, 1 stop bit (9600 N 8 1) configured as a DTE device
 
-"""
+print("start data collection")
+data = support.cycleThrough(n_chan,stab_time_ms,cycle_time_ms,multi,licor)
+data.to_csv(file_name)
+print("data_collection_ended")
 
-"""
-One experimental pipeline for testing the software:  
 
-Cell A which is sample  
-Cell B is control  
-  
-1- Calibration (so that A is zero) water  
-2- Make A and B equal water  
-3- Calibration (so that A is zero) co2  
-4- Make A and B equal co2  
-5- Start recording (two samples per second – give users an option)  
-6- Open chamber, put animal in, close chamber  
-7- If movement is being tracked, start timer with to synch recording to chamber measurements  
-8- Recordings last 30 min  
-  
-Each sample should contain  
-Licor temperature, co2, water for both chambers (check getting the difference from both chambers as well, or calculated via software afterwards)  
 
-"""
 
-class li850:
-    pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
