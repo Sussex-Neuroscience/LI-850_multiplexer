@@ -5,15 +5,22 @@ import support
 import licor
 from datetime import datetime
 import serial
+from pathlib import Path
 
 
-    
-file_name = "test_"+str(datetime.now())
-file_name_stabilization = file_name+"_stabilization_phase.csv"
-file_name_experiment = file_name+"_experiment_phase.csv"
+directory = Path(".")
 
-licor_port="COM1"
-licor = serial.Serial(licor_port,9600)
+now = datetime.now()
+date = now.strftime("%d-%m-%Y_%H-%M-%S")
+
+file_loc = "data\\"
+
+file_name = "test_"+date
+file_name_stabilization = file_loc+file_name+"_stabilization_phase.csv"
+file_name_experiment = file_loc+file_name+"_experiment_phase.csv"
+
+licor = licor.Licor()
+
 
 multiplexer_port="COM4"
 multi = multiplexer(multiplexer_port) #SerialBeeHive is now bh
@@ -35,16 +42,16 @@ stab_time = 1 #in min
 #just convert the total stabilization time from minutes to milliseconds
 stab_time_ms = int(stab_time*60*1000)
 #how much time each chamber should be open
-cycle_time_ms = 2000
+cycle_time_ms = 5000
 
 
 #parameters for experiments
-#total time needed for stabilization
-exp_time = 60 #in min
-#just convert the total stabilization time from minutes to milliseconds
+#total time needed for experiment
+exp_time = 1 #in min
+#just convert the total experiment time from minutes to milliseconds
 exp_time_ms = int(exp_time*60*1000)
 #how much time each chamber should be open
-cycle_time_ms = 5000
+cycle_time_ms = 1000
 
 print("stabilizing chamber")
 data = support.cycleThrough(n_chan,stab_time_ms,cycle_time_ms,multi,licor)
@@ -56,7 +63,7 @@ print("stabilization done")
 
 print("start data collection")
 data = support.cycleThrough(n_chan,stab_time_ms,cycle_time_ms,multi,licor)
-data.to_csv(file_name)
+data.to_csv(file_name_experiment)
 print("data_collection_ended")
 
 

@@ -9,8 +9,8 @@ class multiplexer(Device): #This is the class that contains all the phases
     coll_time_ms = 2*60*60*1000
 
     #time between data collection in min
-    period = 7 #previoulsy discussed that each data collection should be 7min long
-    period_ms = period*60*1000
+    #period = 7 #previoulsy discussed that each data collection should be 7min long
+    #period_ms = period*60*1000
 
 
 
@@ -29,9 +29,9 @@ class multiplexer(Device): #This is the class that contains all the phases
         if n_chan<1:
             n_chan=1
         
-        stab_time = 1 #in min
-        stab_time_ms = stab_time*60*1000
-        cycle_time_ms = 2000
+        #stab_time = 1 #in min
+        #stab_time_ms = stab_time*60*1000
+        #cycle_time_ms = 2000
         
 
         
@@ -55,9 +55,9 @@ class multiplexer(Device): #This is the class that contains all the phases
         ch6_out = Pin(26,Pin.OUT)
         
         #assign a pin to LED indicator
-        led_ind = Pin(14,Pin.OUT)
+        led1_ind = Pin(14,Pin.OUT)
         #assign a pin to bnc output for triggering the LI7000
-        li_ind = Pin(27,Pin.OUT)
+        led2_ind = Pin(27,Pin.OUT)
 
         all_chan = [ch1_in,ch1_out,
                     ch2_in,ch2_out,
@@ -72,8 +72,26 @@ class multiplexer(Device): #This is the class that contains all the phases
 
         for valve in all_chan:
             valve.off()
-        led_ind.off()
-        li_ind.off()
+        led1_ind.off()
+        led2_ind.off()
+        
+    @Device.task
+    def ledOn(index):
+        if index==1:
+            led1_ind.on()
+        elif index==2:
+            led2_ind.on()
+        else:
+            print("index not valid. try 1 or 2")
+    @Device.task
+    def ledOff(index):
+        if index==1:
+            led1_ind.off()
+        elif index==2:
+            led2_ind.off()
+        else:
+            print("index not valid. try 1 or 2")
+        
         
     @Device.task
     def chanOn(index):
@@ -83,6 +101,7 @@ class multiplexer(Device): #This is the class that contains all the phases
     def chanOff(index):
         all_chan[index].off()
 
+"""
     @Device.task
     def stabilize():#than we set the stabilization time for the chambers:
             #number of chambers to be used. Min 1, max 6
@@ -126,7 +145,7 @@ class multiplexer(Device): #This is the class that contains all the phases
                 timer2 =time.ticks_ms()
                 
       
-            
+"""            
 
 
         

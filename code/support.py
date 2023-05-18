@@ -2,23 +2,17 @@
 
 import time
 import pandas as pd
-
-def read_data(licor):
-    pass
-
+import licor as li
 
 def getMillis():
     output = time.monotonic_ns()/(1000_000)
     return output
 
-def cycleThrough(n_chan,stab_time_ms,cycle_time_ms,multiplexer,licor):
+def cycleThrough(n_chan,total_time_ms,cycle_time_ms,multiplexer,licor):
     
-    licor.reset_input_buffer()
-    
-    time.sleep(0.2)
-    temp = licor.readline()
-    #while temp.decode()[0:7]!=""
-    #print(temp)
+
+    temp = licor.read_data()
+    temp = temp[0:temp.decode().find("</data>")+7].decode()+"</li850>"
     data = pd.read_xml(temp)
     data["chamber_open"] = "na"
     data["time_in_millis"] = getMillis()
@@ -28,19 +22,24 @@ def cycleThrough(n_chan,stab_time_ms,cycle_time_ms,multiplexer,licor):
     
     
     
-    while timer2-timer1<stab_time_ms:  
+    while timer2-timer1<total_time_ms:  
         for i in range(0,n_chan,2): 
             chamber = int(i/2+1)
+            
             print("chamber "+str(chamber))
+            
+            
             multiplexer.chanOn(i)
             multiplexer.chanOn(i+1)
-            licor.reset_input_buffer()
-            time.sleep(0.1)
+            #time.sleep(0.1)
             timer4 = getMillis()
+            multiplexer.ledOn(1)
+            time.sleep(0.15)
+            multiplexer.ledOff(1)
             timer3 = getMillis()
-            while timer3-timer4 < float(cycle_time_ms):
-                temp = licor.readline()
-                
+            while timer3-timer4 < int(cycle_time_ms):
+                temp = licor.read_data()
+                temp = temp[0:temp.decode().find("</data>")+7].decode()+"</li850>"
                 #print(temp)
                 timer3 = getMillis()
                 print(timer3-timer4)
